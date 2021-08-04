@@ -1,0 +1,15 @@
+Categories:
+    level 1
+    level 2
+    level 3
+    Expert
+    Mixed
+    Geometry
+
+Mathfunctions:
+    + 
+    -
+    *
+    /
+    Sequence of numbers
+    math formulas
