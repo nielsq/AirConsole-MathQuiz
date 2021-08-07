@@ -24,6 +24,9 @@
   var currGame;
   var CEO;
 
+  const delay = ms => new Promise(res => setTimeout(res, ms));
+  
+
   // Listen for messages from other devices
   airconsole.onMessage = function(from, data) {
 
@@ -110,7 +113,7 @@
   }  
 
 
-  function startGame(){
+  async function startGame(){
     if(currGame == undefined ){
       return;
     }
@@ -125,9 +128,7 @@
         airconsole.message(key, ["question", currGame.questions[i], i, currGame.timer])
       })
 
-      setTimeout(function(){
-        //***
-      }, currGame.timer*1000);
+      await delay(currGame.timer*1000);
 
       currGame.newRound();
 
