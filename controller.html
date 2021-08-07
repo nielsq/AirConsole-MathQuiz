@@ -1,31 +1,50 @@
-<script type="text/javascript" src="https://www.airconsole.com/api/airconsole-1.7.0.js"></script>
-<script type="text/javascript" src="lib/Player.js"></script>
+
+<head>
+  <script type="text/javascript" src="https://www.airconsole.com/api/airconsole-1.7.0.js"></script>
+
+  <script type="text/javascript" src="lib/Anwser.js"></script>
+  <script type="text/javascript" src="lib/Game.js"></script>
+  <script type="text/javascript" src="lib/Level.js"></script>
+  <script type="text/javascript" src="lib/Level1.js"></script>
+  <script type="text/javascript" src="lib/Player.js"></script>
+  <script type="text/javascript" src="lib/Question.js"></script>
+
+  <script type="text/javascript" src="ui-controller/view-ceo.js"></script>
 
 
-<div id="title">
+</head>
+<div id="content" style="height: 100%; display: flex; flex-direction: column; justify-content: space-around;">
   
 
 </div>
 
 <script type="text/javascript">
 
-var airconsole  = new AirConsole({"orientation": "landscape"});
+var airconsole  = new AirConsole({"orientation": "portrait"});
+var CEO_selection_lvl;
+var CEO_selection_rounds = 5;
+var CEO_selection_timer = 20;
 
 // Listen for messages
 airconsole.onMessage = function(from, data) {
 
   switch(data[0]){
     case "welcome":
-        var p = document.createElement('p');
-        p.innerHTML = "Hello " + airconsole.getNickname()
-        p.style.color = data[2]
-        if(data[1]){
-          p.innerHTML+= " you are CEO"
-        }
-
-        var div = document.getElementById("title")
-        div.appendChild(p);
+      var div = document.getElementById("content");
+      var p = document.createElement('p');
+      p.innerHTML = "Hello " + airconsole.getNickname()
+      p.style.color = data[2]
+      if(data[1]){
         
+        paramsUI()
+
+      } else {
+        div.appendChild(p);
+      }
+        
+    break
+    case "question":
+      console.log("recieved Question")
     break
     default:
 
@@ -33,4 +52,7 @@ airconsole.onMessage = function(from, data) {
   }
 
 };
+
+
+
 </script>

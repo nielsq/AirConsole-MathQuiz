@@ -6,10 +6,10 @@
   <script type="text/javascript" src="lib/Anwser.js"></script>
   <script type="text/javascript" src="lib/Game.js"></script>
   <script type="text/javascript" src="lib/Level.js"></script>
-  
   <script type="text/javascript" src="lib/Level1.js"></script>
   <script type="text/javascript" src="lib/Player.js"></script>
   <script type="text/javascript" src="lib/Question.js"></script>
+  
 </head>
 
 <div id="player">
@@ -21,19 +21,33 @@
   var airconsole = new AirConsole();
   var PLAYERS = new Map();
   var usedColors = new Array();
+  var currGame;
   var CEO;
 
   // Listen for messages from other devices
   airconsole.onMessage = function(from, data) {
 
-    // We receive a message -> Send message back to the device
-    airconsole.message(from, "Full of pixels!");
+    switch(data[0]){
+      case "newGame":
+        if(from == CEO.device_id){
+          //creating new game with data from CEO
+          //TODO: level custom
+          currGame = new Game(new Level1(), data[2], data[3])
+          //Adding all current Players to Game
+          PLAYERS.forEach(value =>{
+            currGame.addPlayer(value);
+          })
+          startGame();
+        }
+      break
+      case "answer":
+        currGame.setPlayerAnswer(from,data[1])
+      break
 
-    // Show message on device screen
-    var info = document.createElement('DIV');
-    info.innerHTML = data;
-    document.body.appendChild(info);
+    }
+
   };
+
 
   airconsole.onConnect = function(device_id){
 
@@ -46,6 +60,8 @@
         break;
       }
     }
+
+    usedColors.push(color)
 
     //adding player obj to PLayer map
     var p = new Player(airconsole.getNickname(device_id),device_id, color)
@@ -78,6 +94,10 @@
     console.log(PLAYERS.get(device_id).name + " has leaved" )
     PLAYERS.delete(device_id)
 
+    if(currGame){
+      currGame.removeplayer(device_id)
+    }
+
     //removing player from screen
     var p = document.getElementById("player-" + device_id)
     p.remove();
@@ -88,5 +108,33 @@
     }
 
   }  
+
+
+  function startGame(){
+    if(currGame == undefined ){
+      return;
+    }
+
+    for(var i =0 ; i < currGame.rounds; i++){
+
+      //generiert Frage
+      currGame.genQuestions()
+
+      //send Question to 
+      currGame.players.forEach((value, key) =>{
+        airconsole.message(key, ["question", currGame.questions[i], i, currGame.timer])
+      })
+
+      setTimeout(function(){
+        //***
+      }, currGame.timer*1000);
+
+      currGame.newRound();
+
+    }
+
+
+  }
+
 </script>
     
