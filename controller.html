@@ -1,31 +1,36 @@
 <script type="text/javascript" src="https://www.airconsole.com/api/airconsole-1.7.0.js"></script>
 <script type="text/javascript" src="lib/Player.js"></script>
-<button id="btn-msg">Send Message</button>
+
+
+<div id="title">
+  
+
+</div>
 
 <script type="text/javascript">
 
-var airconsole;
-
-init()
-
-function init(){
-
-  airconsole = new AirConsole({"orientation": "landscape"});
-
-  var me = new Player(airconsole.getNickname(airconsole.getDeviceId()));
-
-}
-
-document.getElementById('btn-msg').addEventListener("click", function() {
-      airconsole.message(AirConsole.SCREEN, "How are you?");
-    });
+var airconsole  = new AirConsole({"orientation": "landscape"});
 
 // Listen for messages
 airconsole.onMessage = function(from, data) {
 
-  // Show message on device screen
-  var info = document.createElement('DIV');
-  info.innerHTML = data;
-  document.body.appendChild(info);
+  switch(data[0]){
+    case "welcome":
+        var p = document.createElement('p');
+        p.innerHTML = "Hello " + airconsole.getNickname()
+        p.style.color = data[2]
+        if(data[1]){
+          p.innerHTML+= " you are CEO"
+        }
+
+        var div = document.getElementById("title")
+        div.appendChild(p);
+        
+    break
+    default:
+
+    break
+  }
+
 };
 </script>

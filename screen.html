@@ -1,7 +1,27 @@
-<script type="text/javascript" src="https://www.airconsole.com/api/airconsole-1.7.0.js"></script>
+
+
+<head>
+  <script type="text/javascript" src="https://www.airconsole.com/api/airconsole-1.7.0.js"></script>
+
+  <script type="text/javascript" src="lib/Anwser.js"></script>
+  <script type="text/javascript" src="lib/Game.js"></script>
+  <script type="text/javascript" src="lib/Level.js"></script>
+  
+  <script type="text/javascript" src="lib/Level1.js"></script>
+  <script type="text/javascript" src="lib/Player.js"></script>
+  <script type="text/javascript" src="lib/Question.js"></script>
+</head>
+
+<div id="player">
+
+
+</div>
 
 <script type="text/javascript">
   var airconsole = new AirConsole();
+  var PLAYERS = new Map();
+  var usedColors = new Array();
+  var CEO;
 
   // Listen for messages from other devices
   airconsole.onMessage = function(from, data) {
@@ -14,5 +34,59 @@
     info.innerHTML = data;
     document.body.appendChild(info);
   };
-  </script>
+
+  airconsole.onConnect = function(device_id){
+
+    console.log(airconsole.getNickname(device_id) + " has joind" )
+    
+    // Selecting unused color for player
+    while (true) {
+      var color = Math.floor(Math.random() * 7) + 1
+      if(!usedColors.includes(color)){
+        break;
+      }
+    }
+
+    //adding player obj to PLayer map
+    var p = new Player(airconsole.getNickname(device_id),device_id, color)
+    PLAYERS.set(device_id, p)
+
+    // selecting game administrator
+    if(CEO === undefined){
+      CEO = p;
+      airconsole.message(device_id, ["welcome", true, p.color])
+    } else {
+
+      airconsole.message(device_id, ["welcome", false, p.color])
+    }
+    //showing player on screen
+    var p = document.createElement('p');
+    p.innerHTML = airconsole.getNickname(device_id);
+    p.id = "player-" + device_id
+    p.style.color = PLAYERS.get(device_id).color
+
+    var div = document.getElementById("player")
+    div.appendChild(p);
+
+    
+
+  }
+
+  airconsole.onDisconnect = function(device_id){
+    
+    // log leaving and remove player from list
+    console.log(PLAYERS.get(device_id).name + " has leaved" )
+    PLAYERS.delete(device_id)
+
+    //removing player from screen
+    var p = document.getElementById("player-" + device_id)
+    p.remove();
+
+    // define new game administrator
+    if(CEO.device_id == device_id){
+      CEO = PLAYERS.values().next().value
+    }
+
+  }  
+</script>
     
