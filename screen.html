@@ -17,6 +17,15 @@
 
 </div>
 
+<div id="questions">
+
+</div>
+
+<div id="answers">
+
+</div>
+
+
 <script type="text/javascript">
   var airconsole = new AirConsole();
   var PLAYERS = new Map();
@@ -25,7 +34,6 @@
   var CEO;
 
   const delay = ms => new Promise(res => setTimeout(res, ms));
-  
 
   // Listen for messages from other devices
   airconsole.onMessage = function(from, data) {
@@ -80,7 +88,7 @@
     }
     //showing player on screen
     var p = document.createElement('p');
-    p.innerHTML = airconsole.getNickname(device_id);
+    p.innerHTML = device_id + " - " + airconsole.getNickname(device_id);
     p.id = "player-" + device_id
     p.style.color = PLAYERS.get(device_id).color
 
@@ -118,17 +126,42 @@
       return;
     }
 
-    for(var i =0 ; i < currGame.rounds; i++){
+    for(var i =0 ; i < currGame.Rounds; i++){
 
       //generiert Frage
       currGame.genQuestions()
 
       //send Question to 
-      currGame.players.forEach((value, key) =>{
-        airconsole.message(key, ["question", currGame.questions[i], i, currGame.timer])
+      currGame.Players.forEach((value, key) =>{
+        airconsole.message(key, ["question", currGame.Questions[i], i, currGame.Timer])
       })
 
-      await delay(currGame.timer*1000);
+      //display questions and anwsers
+      var p = document.createElement('p');
+      p.innerHTML = currGame.Questions[i].task
+      p.id = "task-" + i
+      p.style.color = 'white'
+      var div = document.getElementById("questions")
+      div.appendChild(p);
+
+      var count = 0;
+      currGame.Questions[i].answers.forEach(element =>{
+        var a1 = document.createElement('p');
+        a1.innerHTML = element.ans
+        a1.id = "answer-" + i + "-" + count
+        if(element.correct){
+          a1.style.color = 'green'
+
+        } else {
+          a1.style.color = 'red'
+        }
+        
+        var div = document.getElementById("questions")
+        div.appendChild(a1);
+        count++
+      })
+      
+      await delay(currGame.Timer*1000);
 
       currGame.newRound();
 
